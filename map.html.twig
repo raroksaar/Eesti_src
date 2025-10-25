@@ -1,0 +1,104 @@
+{# templates/map/map.html.twig
+body tag enables debug bar at bottom#}
+
+ <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A brief description of the webpage for search engines.">
+    <meta name="author" content="Your Name">
+    <title>Symfony map project</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to an external CSS file -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Favicon for the browser tab -->
+    <script src="script.js" defer></script> <!-- External JavaScript file -->
+
+ 
+ 
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+	 
+ <!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+	 
+</head>
+
+<body>
+
+	<H2> 
+	======================================================================
+	<p>
+	Symfony PHP application development framework + Leaflet Javascript
+	<br>
+
+  	======================================================================
+  <br>
+    {{message|last}}
+	
+
+	<p id="loc">{{message|first}}</p>
+	<a href="https://www.google.com/maps/place/{{message|first}}">Google maps</a>
+	<br>
+	<br>
+
+
+	<script>
+	document.getElementById("loc").style.color = "blue";
+	</script>
+
+<div id="map" style="width: 1200px; height: 800px;"></div>
+
+<script>
+	const map = L.map('map').setView([{{message|first}}], 14);
+
+	const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 19,
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	}).addTo(map);
+
+	const inputValue = document.getElementById("loc").innerHTML;
+
+	const marker = L.marker([{{message|first}}]).addTo(map)
+		.bindPopup('<b>Tere {{message|last}}:</b><br />' + inputValue).openPopup();
+
+	const popup = L.popup()
+		.setLatLng([{{message|first}}])
+		.setContent('Old Town.');
+		//.openOn(map);
+
+
+
+	function onMapClick(e) {
+		popup
+			.setLatLng(e.latlng)
+			.setContent(`You clicked the map at ${e.latlng.toString()}`)
+			.openOn(map);
+	}
+
+
+	var googlelink = "";
+	var coords = "";
+	var link ="";
+	var url ="";
+      map.on('click', function(e) {
+	     coords = e.latlng.toString().substring(7,e.latlng.toString().length-1);
+		 url = 'https://www.google.com/maps/place/' + coords;
+		 link = '<a href="' + url + '" >Google maps link</a>';
+		 googlelink = coords + '<br>' + link;
+      });
+		
+	function onMapClick(e) {
+		popup
+			.setLatLng(e.latlng)
+			.setContent(googlelink)
+			//.setContent(`You clicked the map at:<br> (${e.latlng.toString()}<br>=====`)
+			.openOn(map)
+	}
+
+
+	map.on('click', onMapClick);
+
+</script>
+
+</body>
